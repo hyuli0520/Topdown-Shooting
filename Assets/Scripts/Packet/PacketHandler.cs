@@ -73,6 +73,13 @@ public class PacketHandler
     public static void ResMoveMonsterHandler(PacketSession session, IMessage packet)
     {
         RES_MOVE_MONSTER movePacket = packet as RES_MOVE_MONSTER;
+
+        GameObject go = Managers.Object.FindById(movePacket.Monster.ObjectId);
+        if (go == null) return;
+        Monster monster = go.GetComponent<Monster>();
+        if (monster == null) return;
+
+        monster.PosInfo = movePacket.Monster.PosInfo;
     }
     public static void ResAttackMonsterHandler(PacketSession session, IMessage packet)
     {
@@ -81,9 +88,11 @@ public class PacketHandler
         GameObject attacker = Managers.Object.FindById(attackPacket.Attacker.ObjectId);
         GameObject target = Managers.Object.FindById(attackPacket.Target.ObjectId);
 
-        Creature player = target.GetComponent<Creature>();
+        Player player = target.GetComponent<Player>();
         if (player == null) return;
-        Creature enemy = attacker.GetComponent<Creature>();
+        Monster enemy = attacker.GetComponent<Monster>();
         if (enemy == null) return;
+
+        enemy.AttackPlayer(player);
     }
 }
